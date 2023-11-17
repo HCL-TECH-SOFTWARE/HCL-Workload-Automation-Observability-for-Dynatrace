@@ -6,10 +6,9 @@ You can use the HCL Workload Automation (HWA) Observability for Dynatrace to mon
 - [HCL Workload Automation Observability for Dynatrace](#hcl-workload-automation-observability-for-dynatrace)
   - [Content](#content)
   - [Prerequisites](#prerequisites)
-  - [Resources Required](#resources-required)
   - [Language support](#language-support)
   - [Solution setup](#solution-setup)
-      - [1. Installating and Configuring Dynatrace](#1-installating-and-configuring-dynatrace)
+      - [1. Installating and configuring dynatrace](#1-installating-and-configuring-dynatrace)
       - [2. Install Dynatrace Operator](#2-install-dynatrace-operator)
       - [3. Verify Dynatrace Operator](#3-verify-dynatrace-operator)
       - [4. Verify Dynatrace Monitoring](#4-verify-dynatrace-monitoring)
@@ -17,8 +16,11 @@ You can use the HCL Workload Automation (HWA) Observability for Dynatrace to mon
       - [1. Log custom attributes](#1-log-custom-attributes)
       - [2. Log processing](#2-log-processing)
       - [3. Log metrics](#3-log-metrics)
-      - [4. Configure more logs](#4-configure-more-logs)
+      - [4. Configure more logs](#4-Configure-more-logs)
       - [5. Log storage configuration](#5-log-storage-configuration)
+  - [Metric Processing and Ingestion setup](#metric-processing-and-ingestion-setup)
+      - [1. Metric Ingestion](#1-metric-ingestion)
+      - [2. Setting Metadata](#2-setting-metadata)
   - [WA Monitoring Dashboards and Alerts setup in Dynatrace](#wa-monitoring-dashboards-and-alerts-setup-in-dynatrace)
        - [1. Getting Environment Link](#1-getting-environment-link)
        - [2. Create Access Token](#2-create-access-token)
@@ -27,48 +29,41 @@ You can use the HCL Workload Automation (HWA) Observability for Dynatrace to mon
        - [5. Setup Email Notification for Alerts ( Optional )](#5-setup-email-notification-for-alerts--optional-)
          - [a). Configuring Alert Profile](#a-configuring-alert-profile)
          - [b). Configuring Email Integration](#b-configuring-email-integration)
-  - [Metric Processing and Ingestion setup](#metric-processing-and-ingestion-setup)
-    - [1. Metric Ingestion](#1-metric-ingestion)
-         - [a). Create the Secret](#a-create-the-secret)
-    - [2. Ingested metrics in Dynatrace](#2-ingested-metrics-in-dynatrace)
-    - [3. Setting Metadata](#3-setting-metadata)
-  - [Getting Started with Workload Automation Monitoring](#getting-started-with-workload-automation-monitoring)
+  - [Getting Started with Workload Automation Monitoring](#getting-started-with-workload-automation-monitoring-)
   - [FAQs](#faqs)
 
 ## Prerequisites
-Following prerequisites must be satisfied prior to deploy Dynatrace Solution 
-- Kubernetes cluster(OCP V4.7 or above, GKE) with administrative access
-- HWA v10 installed on the Kubernetes cluster 
-- Tools & Packages 
-  - [Helm3](https://helm.sh/docs/intro/install/) 
-  - Dynatrace SaaS Version 1.252
+Following prerequisites must be satisfied prior to deploy the Dynatrace Solution: 
+- Kubernetes cluster(GKE) with administrative access
+- HWA v10.x installed on the Kubernetes cluster 
+- Tools & Packages
+  - Dynatrace SaaS Version 1.268
 
-Note: To use the HWA Observability Dashboard for Dynatrace, HWA metrics must be available. For information about HWA exposed metrics, see [Exposing metrics to monitor your workload](https://help.hcltechsw.com/workloadautomation/v101/distr/src_ref/awsrgmonprom.html).
+Note: To use the HWA Observability Dashboard for Dynatrace, HWA metrics must be available. For information about HWA exposed metrics, see [Exposing metrics to monitor your workload](https://help.hcltechsw.com/workloadautomation/v102/distr/src_ref/awsrgmonprom.html).
 
- ## Resources Required
- The following resources correspond to the default values required to manage a production environment. These numbers might vary depending on the environment.
- 
-| Component | Container resource limit | Container memory request |
-|--|--|--|
-|**hwa-dynatrace-exporter** |CPU: 2, Memory: 4Gi |CPU: 0.5, Memory: 0.5Gi, Storage: n/a  |
 
 ## Language support
 For dashboards provided within HWA Observability for Dynatrace, the only supported language is English. 
 
 ## Solution setup
 
-### 1. Installating and configuring dynatrace
-1. From [HCL License Portal](https://id.hcltechsw.com/login/login.htm) download the appropriate HWA Observability installation package:
-   HWA Observability for HWA Observability Add-on
-2. Installation package for Dynatrace: HWA_OBSERVABILITY_APP_FOR_DYNATRACE_10.1.0.1.tar.gz
-3. Follow the below command to untar the gzip file 
+NOTE: If you are using Dynatrace version higher than 1.268 switch to the requird version by running the following:
+
+   In the Dynatrace menu > Select user profile > Turn off Latest Dynatrace
+
+### 1. Installating and configuring Dynatrace
+1. From [HCL License Portal](https://id.hcltechsw.com/login/login.htm) download the appropriate HCL Universal Orchestrator Observability installation package:
+   Universal Orchestrator for HWA Observability Add-on
+   
+2. Installation package for Dynatrace : HWA_OBSERVABILITY_APP_FOR_DYNATRACE_10.x.tar.gz
+
+3. Follow the below command to untar the gzip file: 
   
   ```
-
-	tar -xvzf HWA_OBSERVABILITY_APP_FOR_DYNATRACE_10.1.0.1.tar.gz
+	tar -xvzf HWA_OBSERVABILITY_APP_FOR_DYNATRACE_10.x.tar.gz
   ```
 
-4. Follow the steps mentioned on the ReadMe file to continue solution setup.
+4. Follow the steps mentioned on this ReadMe file to complete the solution setup.
 
 #### 2. Install Dynatrace Operator  
 
@@ -81,43 +76,46 @@ To navigate to Kubernetes page, follow these steps and refer to the picture belo
 
 To get the Dynatrace Operator installation command, refer to the steps and pictures below:
 
-![](screenshots/deployment-oneagent-kubernetes.png)
-1. On the Kubernetes configuration page, enter dynatrace for the name. This is not the cluster name, it will show up as the Kubernetes page name in Dynatrace
+ ![](screenshots/deployment-oneagent-kubernetes.png)
+1. On the Kubernetes configuration page, enter dynatrace in the Name field. This is not the cluster name, it will show up as the Kubernetes page name in Dynatrace
 2. Select Create token
-3. Select the Enable volume storage Check to be ON
-4. Click the Copy button
+3. Set the Enable volume storage toggle switch to ON
+4. Download dynakube.yaml
+5. Click the Copy button
 
 Paste the command in your environment and run it.
 
 #### 3. Verify Dynatrace Operator  
 
-Once the script is complete, then monitor the installation until all pods are in Running state with all pods as 1/1.
+Once the script is complete, monitor the installation until all pods are in Running state with all pods as 1/1.
 ```
 kubectl -n dynatrace get pods
 ```
 Rerun the command until the output looks like this:
 
-![](screenshots/dynatrace_onagent_pods_running.PNG)
+ ![](screenshots/dynatrace_onagent_pods_running.PNG)
 
 #### 4. Verify Dynatrace Monitoring
-1. Go to Infrastructure > Kubernetes
+1. Go to Infrastructure Observability > Kubernetes
 2. Select Dynatrace cluster name
 3. Verify all namespaces are present
 
-![](screenshots/kubernetes_dynatrace_monitor.PNG)
+ ![](screenshots/kubernetes_dynatrace_monitor.PNG)
+
+NOTE : This Dynatrace version is monitoring all the namespaces in the cluster. Add your namespaces in the global filter to see your namespace related information.
 
 ## Log Processing and Ingestion setup
  Dynatrace OneAgent collects all logs container and pods then send it to Dynatrace SaaS. The logs are unstructured so, follow the steps to process the logs.  
 
- NOTE : This Log Processing and Ingestion setup is developed and tested on  Dynatrace SaaS Version 1.252.
+ NOTE : This Log Processing and Ingestion setup is developed and tested on Dynatrace SaaS Version 1.268.
 
 #### 1. Log custom attributes
 
-1. In the Dynatrace menu, go to Settings
-2. Select Settings > Log Monitoring > Log custom attributes and then select Add Custom Attribute
-3. Add key as Attributes table values
-4. Turn on show attribute value in side bar 
-5. Select Save Changes  
+1. In the Dynatrace menu, go to Settings.
+2. Select Settings > Log Monitoring > Custom attributes and then select Add Custom Attribute.
+3. Add key as Attributes table values.
+4. Turn on show attribute value in side bar. 
+5. Select Save Changes.  
 
 | Attributes |
 | ------ | 
@@ -132,7 +130,7 @@ Rerun the command until the output looks like this:
 #### 2. Log processing 
 
 1. In the Dynatrace menu, go to Settings
-2. Select Settings > Log Monitoring > Log processing and then select Add Processing Rule
+2. Select Settings > Log Monitoring > Processing and then select Add Rule
 3. Add Processor name as mentioned below
 ```
 WA Log Parsing
@@ -141,13 +139,16 @@ WA Log Parsing
 ```
 content="auditType"
 ```
-5. Add Processor definition as mentioned below   
+5. Add Processor definition as mentioned below:
 ```
-PARSE(content, "LD 'auditType' PUNCT? SPACE? STRING:audit.type LD 'objectType' PUNCT? SPACE? STRING:object.type LD 'actionType' PUNCT? SPACE? STRING:action.type LD 'workstationName' PUNCT? SPACE? STRING:workstationname LD 'userName' PUNCT? SPACE? STRING:username LD 'frameworkUser' PUNCT? SPACE? STRING:framework.user")| FIELDS_ADD(action.type:TRIM(action.type))
-| FIELDS_ADD(audit.type:TRIM(audit.type))
-| FIELDS_ADD(object.type:TRIM(object.type))
-| FIELDS_ADD(workstationname:TRIM(workstationname))
-| FIELDS_ADD(username:TRIM(username))
+USING(INOUT content)
+| PARSE(content,"STRING SPACE 'stdout F' SPACE JSON:content") 
+| FIELDS_ADD(object.type: TRIM(STRING(content["objectType"])), 
+action.type:TRIM(STRING(content["actionType"])) ,
+audit.type:TRIM(STRING(content["auditType"])) ,
+workstationname:TRIM(STRING(content["workstationName"])) ,
+username:TRIM(STRING(content["userName"])) ,
+framework.user:TRIM(STRING(content["frameworkUser"])) )
 ```
 6. Add log sample as mentioned below   
 ```
@@ -160,7 +161,7 @@ PARSE(content, "LD 'auditType' PUNCT? SPACE? STRING:audit.type LD 'objectType' P
 #### 3. Log metrics 
 
 1. In the Dynatrace menu, go to Settings
-2. Select Settings > Log Monitoring > Log metrics and then select Add log metric 
+2. Select Settings > Log Monitoring > Metrics extraction and then select Add log metric 
 3. Add Key as mentioned below
 ```
 log.wa.content
@@ -188,52 +189,130 @@ Occurrence of logs records
 
 #### 4. Configure more logs
 
-1. In the Dynatrace menu, go to Kubernetes
-2. Select Kubernetes > Dynatrace { your cluster } > wa { your namespace } 
-3. Select hwa-gke-waserver {workloads} > hwa-gke-waserver-0 {pods} 
-4. Select agent hwa-gke-waserver-* waserver (hwa-gke-waserver-0) { Processes }
+1. In the Dynatrace menu, go to Settings.
+2. Select Settings > Log Monitoring > Custom log source configuration. 
+3. Activate Custom log source if not activated.
+4. Add Rule name as WA Log Storage.
+5. Select Process groups that contains below text.
+```
+agent hwa-gke-waserver-*
+```
+6. Select Log source type as Log path.
+7. Add Custom log path source as below.
+```
+/var/log/pods/*/waserver-plan-auditing/#.log
+```
+```
+/var/log/pods/*/waserver-db-auditing/#.log
+```
+```
+/var/log/pods/*/waserver-bm-events/#.log
+```
+8. Select Save Changes.
 
- ![](screenshots/configure_more_logs.PNG)
-
-5. Copy your waserver log path. It looks like below.
-```
-/var/log/pods/wa_hwa-gke-waserver-0_245768a2-f139-471d-a798-75c8da675a35/waserver/#.log
-```
-6. Select configure more logs and then select Add new log monitoring
-7. Replace your waserve log path with waserver-plan-auditing then Save. Follow this same process for waserver-db-auditing ,waserver-bm-events. Examples are given below.
-```
-/var/log/pods/wa_hwa-gke-waserver-0_245768a2-f139-471d-a798-75c8da675a35/waserver-plan-auditing/#.log
-/var/log/pods/wa_hwa-gke-waserver-0_245768a2-f139-471d-a798-75c8da675a35/waserver-db-auditing/#.log
-/var/log/pods/wa_hwa-gke-waserver-0_245768a2-f139-471d-a798-75c8da675a35/waserver-bm-events/#.log
-```
-![](screenshots/manually_add_logs.PNG)
-
-NOTE : Follow the same step for Openshift solution and select the workloads ,pods contains  ***waserver*** name.
 
 #### 5. Log storage configuration 
 
 1. In the Dynatrace menu, go to Settings
-2. Select Settings > Log Monitoring > Log storage configuration and then select Add rule
+2. Select Settings > Log Monitoring > Log ingest rules and then select Add rule
 3. Add Rule name as WA Log Storage
 4. Select Rule type as Include in storage
 5. Select Add Matcher and then select Matcher attribute as Log Source.
-6. Add Value as the log path of waserver-plan-auditing, waserver-db-auditing, waserver-bm-events from the previous step and then select Add Matcher. 
-![](screenshots/logs_storage.PNG)
-7. Select Save Changes  
-
- NOTE : if the waserver is deleted and recreated the logs path gets changed. So, follow the step 4 and 5 again once its re-deployed.
+6. Add Value as the below log paths.
+```
+/var/log/pods/*/waserver-plan-auditing/#.log
+```
+```
+/var/log/pods/*/waserver-db-auditing/#.log
+```
+```
+/var/log/pods/*/waserver-bm-events/#.log
+```
+7. Then select Add Matcher
+8. Select Save Changes  
  
+
+## Metric Processing and Ingestion setup
+
+### 1. Metric Ingestion
+
+1. In Dynatrace, go to Infrastructure Observability > Kubernetes > Select Actions from your Kubernetes cluster > Select settings.
+2. Select Monitoring settings page and then enable the below toggles and save the changes
+   - Monitor Kubernetes namespaces, services, workloads, and pods
+   - Monitor annotated Prometheus exporters
+
+```
+kind: Service
+apiVersion: v1
+metadata:
+  name: dynatrace-monitoring-node-exporter
+  namespace: wa
+  annotations:
+    metrics.dynatrace.com/port: '31116'
+    metrics.dynatrace.com/scrape: 'true'
+    metrics.dynatrace.com/secure: 'true'
+    metrics.dynatrace.com/path: '/metrics'
+    metrics.dynatrace.com/insecure_skip_verify: 'true'
+spec:
+  ports:
+    - name: dynatrace-monitoring-node-exporter-port
+      port: 31116
+  selector:
+    release: hwa-gke
+  clusterIP: None
+  ``` 
+
+3. Copy the above service content and save it as dynakube-service.yaml file. 
+
+4. Run the below command and describe any pods from wa and update the dynakube-service.yaml file:
+```
+kubectl describe pod <POD_NAME>  -n wa
+``` 
+5. Replace namespace from dynakube-service.yaml with wa namespace.
+
+6. Replace port, path annotation from dynakube-service.yaml with your pod annotation values.
+
+7. Replace release selector from dynakube-service.yaml with wa pod release label value.
+
+8. Run the blow command to create the service:
+ ```
+ kubectl create -f dynakube-service.yaml
+ ```
+
+### 2. Setting Metadata 
+There are a few metrics to which you are required to provide metadata to have good analysis on dashboards.
+
+| Metric name	 | Display name |
+| ------ | ------ |
+| application_wa_criticalJob_highRisk_boolean	 | High risk jobs |
+| application_wa_criticalJob_potentialRisk_boolean |	Potential risk jobs |
+| application_wa_criticalJob_incompletePredecessor_jobs  | No risk jobs |
+| application_wa_DB_connected_boolean  |	DB connection |
+| application_wa_JobsByFolder_jobs |	Jobs by folder |
+| application_wa_JobsByWorkstation_jobs  |	Jobs by workstation |
+
+Steps to follow:
+1. Go to Menu, Observe and Explore > Metrics.
+2. In filter bar, enter the name of any metrics mentioned above and that metric will be filtered out.
+3. Select Edit metadata.
+4. Give Display name which is given in above table respectively.
+5. Follow this procedure for all the metrics.
+
+
+<!-- ![Side panel](/overview_dashboard.PNG) -->
+
 ## WA Monitoring Dashboards and Alerts setup in Dynatrace
    Follow the below steps to upload and configure the WA Monitoring Dashboards and Alerts.
    
-NOTE : This Alerts and Email Notification setup is developed and tested on Dynatrace SaaS Version 1.252.
+NOTE : This Alerts and Email Notification setup is developed and tested on Dynatrace SaaS Version 1.268.
 
  ##### 1. Getting Environment Link
-  1. Select the user icon at the top right corner
-  2. Select Account > Account Settings
-  3. Go to Consumption by Environment section
-  4. Select your Environment and copy the link address of Environment.
-  
+  1. Get the browser URL of your environment as mentioned below.
+
+ ```
+ https://XXXX.YYYY.dynatrace.com
+ ```
+
 
  ##### 2. Create Access Token
  1. In the Dynatrace menu, go to Access Token and then select Generate new Token
@@ -247,7 +326,6 @@ NOTE : This Alerts and Email Notification setup is developed and tested on Dynat
 | Ingest metrics |
 
  5. Select Generate Token and then Copy the Generated Token for further use.
-
 
  ##### 3. Create Dashboards and Alerts
 
@@ -271,12 +349,9 @@ NOTE : This Alerts and Email Notification setup is developed and tested on Dynat
  ![](screenshots/dashboard_landing.PNG)
 
  4. In the Dynatrace menu, go to Settings
-       - Go to Setting > Anomaly detection > Custom events for alerting
+       - Go to Setting > Anomaly detection > Metric events for alerting
        - Verify all the created alerts
 
- ![](screenshots/custom_alerts.PNG)
-
-5.  In the Dynatrace menu, go to Problems and check the raised alerts or select the icon at top right corner
 
  ##### 4. Configuring dashboard markdown link
 
@@ -299,7 +374,7 @@ NOTE : This Alerts and Email Notification setup is developed and tested on Dynat
 
  ###### a). Configuring Alert Profile
 
- 1. In the Dynatrace menu, go to Settings > Alerting > Alerting profiles
+ 1. In the Dynatrace menu, go to Settings > Problem alerting profiles  > Add alerting profiles
  2. Type a name for the new profile in the Create new alerting profile field and select Create
  3. Select Add severity rule then select Problem severity level as **Custom**
  4. Add Problem send delay in minutes as per your requirement. For example, if you add 30, then an email notification will be sent only if the problem remains open for 30 minutes.
@@ -313,125 +388,43 @@ NOTE : This Alerts and Email Notification setup is developed and tested on Dynat
 
  ###### b). Configuring Email Integration
 
-   Follow this [Email Integration](https://www.dynatrace.com/support/help/setup-and-configuration/integrations/problem-notifications/email-integration) documentation to configure email notification for alerts.
+   Follow this [Email Integration](https://docs.dynatrace.com/docs/observe-and-explore/notifications-and-alerting/problem-notifications/email-integration) documentation to configure email notification for alerts.
 
  ![](screenshots/alerting_profile_suggestion.PNG)
 
   NOTE : Select the Alerting Profile Name you have configured in the previous step.
 
 
-## Metric Processing and Ingestion setup
-
-### 1. Metric Ingestion 
-We are getting KPI metrics from WA API endpoint using Exporter. Exporter transforms kpi data into dynatrace-supported metric-ingestion format and then, pushes to dynatrace server by making a POST call to Dynatrace **[Metrics v2](https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v2/post-ingest-metrics)**. Metrics are ingested with **[Metric Ingestion Protocol](https://www.dynatrace.com/support/help/extend-dynatrace/extend-metrics/reference/metric-ingestion-protocol)**.
-
-Exporter can be deployed in Kubernetes environment by using the Exporter helm chart. The public Exporter helm chart can be cloned from <REPO> by using the below command:
-
-```
-   git clone https://github.com/HCL-TECH-SOFTWARE/HCL-Workload-Automation-Observability-for-Dynatrace.git 
-```
-  
- After downloading helm charts, set all required environment variables present in the values.yaml file present in CHART-NAME/values.yaml file.
-
-List of environment variables present in values.yaml file are:
-| Environment Variables |
-| ------ | 
-| INVERVAL_OMETRICS| 
-| WA_OMETRICS |
-| DYNATRACE_SERVER_URL | 
-| API_TOKEN |
-  
- Note: Refer to above steps to get Dynatrace API token and Server URL.
- 
-###### a). Create the Secret
-If you already have a license then you can proceed to obtain your entitlement key. To learn more about acquiring an HCL Workload Automation license, contact HWAinfo@hcl.com.
-
-Obtain your entitlement key and store it on your cluster by creating a Kubernetes Secret. Using a Kubernetes secret allows you to securely store the key on your cluster and access the registry to download the chart and product images.
-
-Access the entitled registry.
-Contact your HCL sales representative for the login details required to access the HCL Entitled Registry.
-
-To create a pull secret for your entitlement key that enables access to the entitled registry, run the following command:
-  
-```
-$ kubectl create secret docker-registry  exporter-secret --docker-server=<registry_server> --docker-username=<user_name> --docker-password=<password>
-```
-After setting the required environment variables in the values.yaml file, to install the chart into namespace 'default' with the release name my-exporter-release use the below commands:
-
-```
-$ helm install RELEASE_NAME HELMCHART_DIR
-```
-
-### 2. Ingested metrics in Dynatrace
-After making successful POST call to ingest KPI metrics to the dynatrace server, it is required to see ingested data in Dynatrace UI. 
-
-There are two ways to witness ingestion:
-1. Dashboards:
- - Menu of Dynatrace UI: Observe and Explore > Dashboards
- - Now, select any of the dashboard mentioned below to look for information of your choice:
-     - HWA Observability Dashboard
-     - Jobs and Job Streams Dashboard
-     - KPIs and Workstations Dashboard
-    
-    Ingested changes must be reflecting in dashboards. 
-
-2. Data Explorer
- - Menu of Dynatrace UI: Observe and Explore > Metrics
- - Set time duration in the top right corner of Dynatrace UI according to the period over which you want to see ingestion.
- - In filter, select text and enter "wa.metric". All of the ingested metrics will start appearing there. 
-  Choose metrics among them which you were looking for.
-
-### 3. Setting Metadata 
-There are a few metrics to which you are required to provide metadata to have good analysis on dashboards.
-
-| Metric name	 | Display name |
-| ------ | ------ |
-| application_wa_criticalJob_highRisk_boolean	 | High risk jobs |
-| application_wa_criticalJob_potentialRisk_boolean |	Potential risk jobs |
-| application_wa_criticalJob_incompletePredecessor_jobs  | No risk jobs |
-| application_wa_DB_connected_boolean  |	DB connection |
-| application_wa_JobsByFolder_jobs |	Jobs by folder |
-|application_wa_JobsByWorkstation_jobs  |	Jobs by workstation |
-
-Steps to follow:
-1. Go to Menu , Observe and Explore > Metrics
-2. In filter bar, enter the name of any metrics mentioned above and that metric will be filtered out.
-3. Select Edit metadata
-4. Give Display name which is given in above table respectively.
-5. Follow this excercise for all the metrics.
-
-
-<!-- ![Side panel](/overview_dashboard.PNG) -->
-
 ## Getting Started with Workload Automation Monitoring
 
 The HWA Observability Dashboard​ provides a single, consolidated view for monitoring the workload status. By selecting the dashboard on the list, you can see the information related to that dashboard.
 
-HWA Observability Dashboard​:
+- **HWA Observability Dashboard**​:
 
  ![](screenshots/overview_dashboard.png)
 
 By clicking a button or menu option, you open a new tab displaying the selected dashboard information. The following dashboards are supported: 
 
-- Jobs and Job Streams. This dashboard shows the status of Jobs, Critical Jobs, and Job Streams. 
+- **Jobs and Job Streams**. This dashboard shows the status of Jobs, Critical Jobs, and Job Streams. 
 
   Source of Information: HWA Deployment events sidecar container and HWA server Logs.
 
-- KPIs and Workstations. This dashboard shows the HWA KPIs information for each host and allows drilldown to see the timeseries data in a visual representation for the defined KPIs.
+- **KPIs and Workstations**. This dashboard shows the HWA KPIs information for each host and allows drilldown to see the timeseries data in a visual representation for the defined KPIs.
  
   Source of Information: API exposed by HWA Server on port 31116.
 
- - Auditing Dashboard. This dashboard shows details of audit information such as user actions. Users can view audit information for selected time range, user, and object.
+ - **Auditing Dashboard**. This dashboard shows details of audit information such as user actions. Users can view audit information for selected time range, user, and object.
  
    Source of Information: HWA Deployment sidecar audit containers, for example: waserver-db-auditing, waserver-plan-auditing etc.
   
-- Infrastructure Dashboard. This dashboard provides an overview of the infrastructure details of HWA deployed on Kubernetes cluster.
+- **Infrastructure Dashboard**. This dashboard provides an overview of the infrastructure details of HWA deployed on Kubernetes cluster.
 Filter by your Kubernetes namespace and view the dasboard as shown below.
  ![](screenshots/infra_namespace_filter.PNG)
   Source of Information: : OneAgent Monitors the workload automation infrastructures and sent it as metric to Dynatrace.
 
- - Custom Alerts and Problems. Custom Alerts are created out of HWA Monitoring Application.
- Follow this [Metric events for alerting](https://www.dynatrace.com/support/help/how-to-use-dynatrace/problem-detection-and-analysis/problem-detection/metric-events-for-alerting#create-a-metric-event) documentation to create your problems.
+ - **Custom Alerts and Problems**.
+  Custom Alerts are created out of HWA Monitoring Application.
+ Follow this [Metric events for alerting](https://www.dynatrace.com/news/blog/custom-alerts-set-get/#:~:text=To%20define%20a%20custom%20alert%201%20Go%20to,and%20the%20unique%20conditions%20of%20your%20environment.%20) documentation to create your problems.
 The following table shows some of the out-of-the-box alert definitions that come with the HWA Observability Dashboard​:
 
 | Alert Name	 | Threshold Condition |
@@ -445,108 +438,84 @@ The following table shows some of the out-of-the-box alert definitions that come
 
 ## FAQs
 
-1. How many dashboards are available?
+
+1. Q: The ReadMe steps mentioned in the Log storage configuration section were not present in Dynatrace
+
+   A: Update to new Log storage configuration if not updated.
+
+2. Q. The ReadMe steps mentioned in the  Custom log source configuration wwere not present in Dynatrace
+ 
+   A: Activate Custom log source if not activated.
+
+3. Q: On which version of Dynatrace is this Solution Developed/Tested?
+  
+   A: This solution is Developed/Tested on Dynatrace SaaS Version 1.268
+
+4. Q: How can I switch to Dynatrace version 1.268 from higer version? 
+  
+   A: In the Dynatrace menu > Select user profile > Turn off Latest Dynatrace.
+
+5. Q: Metrics are not ingested into Dynatrace  
      
-     You can import and use the following 5 dashboards:
+   A: In Dynatrace, go to your Kubernetes cluster settings page and enable
+     - Monitor Kubernetes namespaces, services, workloads, and pods
+     - Monitor annotated Prometheus exporters
+
+6. Q: How can I get quick glimpses of various information ?
+ 
+   A: Use the HWA Observability Dashboard​ for this purpose.
+   
+7. Q: How can I filter information on dashboards?
+
+   A: There is a dynamic filter on each dashboard. Multiple custom dimensions are already present specific to each dashboard. You can use these custom dimensions and give specific input to the filter.
+   ![Dynamic Filter](screenshots/dynamic_filter.png)
+
+8. Q: How many dashboards are available?
+     
+   A: You can import and use the following 5 dashboards:
     - HWA Observability Dashboard​ (Overview Dashboard) 
     - Jobs and Job Streams Dashboard
     - KPIs and Workstations Dashboard
     - Auditing Dashboard
     - Infrastructure Dashboard
-2. How can I get quick glimpses of various information ?
- 
-    Use the HWA Observability Dashboard​ for this purpose.
-   
-3. How can I filter information on dashboards ?
 
-  There is a dynamic filter on each dashboard. Multiple custom dimensions are already present specific to each dashboard. You can use these custom dimensions and give specific input to the filter.
-![Dynamic Filter](screenshots/dynamic_filter.png)
-- Steps:
-   - Choose Custom dimension over which you want to filter the dashboard. E.g. folder,jobstatus,jobname etc
-   - Give any valid dimension value to Custom dimension. The value is case sensitive and should consists of all alphanumeric values and symbols like underscore, hyphen, and so on. For example, if the workstation name is /HWA-GKE-SERVE_XA, value should be same with initial backslash, hyphens at same places and underscore before XA. 
-   - Use cases allowed:
-         - Filtering based on multiple dimension values for the same custom dimension can be given simultaneously. 
-         E.g. folder be filtered with /FOLDER1/ and /FOLDER3/
-         - Filtering based on multiple custom dimensions simultaneously. Just keep adding dimensions one by one.
-         E.g.workstation:/MASTERAGENTS;folder:/FOLDER4/;jobstatus:READY
-         ![Dynamic Filtering](screenshots/DynamicFilter.png)
-   - If you use incorrect filters, **No data** will appear in certain related blocks in dashboard.
-![No Data](screenshots/NoData.png)
-4. How to resolve if am witnessing conflicting information on dashboard?
-I am assuming that by conflicting information you mean that for same KPI metric different information is visible on on different blocks of dashboard. Actually, it is expected situation. Let me explain how:
-![Conflicting Information](screenshots/conflictingInfo.png)
-Outcomes which dashboard in above image is indicating :
-    - Jobs By Workstation:
-        - 36 jobs in /WA-GKE-SERVER_XA workstation
-        - 12 jobs in /HWA-GKE-SERVE_XA workstation
+9. Q: How can I see infrastructure details for a specific cluster?
 
-    - Jobs in plan by status:
-        - 36 jobs are in WAITING
-    - Jobs by workstation and status:
-        - 36 jobs in WAITING in /WA-GKE-SERVER_XA workstation
-        - 12 jobs in WAITING in /HWA-GKE-SERVE_XA workstation
+   A: Filter by your Kubernetes namespace and view the infrastructure details.
 
-  So,we might feel that Jobs in plan by status is giving incongruent information from Jobs By Workstation and Jobs by workstation and status.Ideally, Jobs in plan by status should have shown 48 jobs in WAITING.
-  Actually, **this incongruency is not error**. What must have been is that 12 jobs of WAITING jobstatus might have get closed in the past days(duration set is 7 days)as the analysis which we are getting is aggregated for time duration. Though, Jobs in plan by status doesn't include those closed 12 WAITING jobs but, rest blocks have considered that information too. Similar situation can occur for other KPI metrics too.
-
-5. How to add audit type e.g., Stageman in Auditing Dashboard?
-
-    Replace filter condition with your AuditType e.g. Stageman and follow this procedure for all the new AuditType component:
-    - Select Edit option
-    - Clone the Dashboard or Plan AuditType component
-    - Select Configure tile in Data Explorer
-    - Replace the filter condition the following eq("audit.type","STAGEMAN")
-    - Select Save changes to dashboard
-6. Pods and container names are not matching on configure more logs step for OpenShift?
-
-    Follow the same steps for OpenShift solution and select the workloads, pods contain ***waserver*** name.
- 
-7. After pods are deleted and recreated the logs path are changed, so the logs are not ingested.
-  
-    Follow the below Log ingestion steps again:
-      - [Configure more logs](#4-configure-more-logs)
-      - [Log storage configuration](#5-log-storage-configuration)
-8. HWA Observability Dashboard infrastructure details not specific cluster?
-
-    Filter by your Kubernetes namespace and view the infrastructure details .
-
-9. How to get Email if Problem/Alert exist for more than 30 minutes? 
-    - In the Dynatrace menu, go to Settings > Alerting > Alerting profiles.
+10. Q: How to get Email if Problem/Alert exists for more than 30 minutes?
+    
+    A: In the Dynatrace menu, go to Settings > Alerting > Alerting profiles.
     - Select your Alerting profiles integrated with problem notification.
     - Select Severity rule > Custom Alerts > Add your Problem send delay in minutes.
 
-10. Which version of Dynatrace this setup is supported? 
+11. Q: Are Jobs, Job streams, KPIs and Workstation information displayed as metrics name?
+
+    A: Follow the [2. Setting Metadata](#2-setting-metadata) to update the metrics metadata name.
+
+
+12. Q: What are the other ways to get the Dashboard ID? 
   
-    This setup is supported for Dynatrace SaaS Version 1.252
+    A: Open the Dashboard in the browser and copy the ID field from browser URL.
 
-11. How to uninstall the exporter?
+13. Q: Duplicate Dashboard and Alert are created on Dynatrace?
+
+    A: Retrying [Create Dashboards and Alerts](#3-create-dashboards-and-alerts) step mutiple times will create duplicate entry on Dynatrace. After the script is executed, wait for some minutes to refresh Dynatrace and check the Dashboards.
+
+14. Q: How to further improve analysis using dashboard?
+    A: In the dashboard, for the pie-chart representation there is a quick way to see specific analysis.
+    - Select any of the option you want to omit e.g., Ready in Job status
+    - Select ready and thus the pie-chart will not show the Ready results
   
-     Run the following command **helm uninstall RELEASE_NAME**
+15. Q: How to Clone dashboard?
 
-12. Job and jobs stream and KPIs and Workstation information are displayed as metrics name?
+    A: Run the following steps:
+    - In the Dynatrace menu, go to Dashboards
+    - Filter the respective dashboard and click the More icon 
+    - Select the Clone option.
 
-     Follow the [Setting Metadata](#3-setting-metadata) to update the metrics metadata name.
-
-13. Common mistake on [WA Monitoring Dashboards and Alerts setup in Dynatrace](#wa-monitoring-dashboards-and-alerts-setup-in-dynatrace) step?
-
-    Not copying the Dashboard ID from terminal for further use
-
-14. What are the other ways to get the Dashboard ID? 
-  
-    Open the Dashboard in the browser and copy the ID field from browser URL.
-
-15. Duplicate Dashboard and Alert are created on the Dynatrace?
-
-    Retrying [Create Dashboards and Alerts](#3-create-dashboards-and-alerts) step mutiple times will create duplicate entry on Dynatrace. So the script is executed wait for some minutes and refresh the Dyntarce and check the Dashboards.
-
-16. How to improvise analysis using dashboard further?
-    - In the dashboard, for the pie-chart representation there is a quick way to see specific analysis.
-    - Select any of the option which you want to omit e.g., Ready in Job status
-    - Select ready and thus, pie-chart will not show results of Ready in pie-chart
-  
-17. How to Clone dashboard?
-     - In the Dynatrace menu, go to Dashboards
-     - Filter the respective dashboard and click more symbol
-     - Select Clone option.
-
+16. Q: Logs are not ingested into Dynatrace after redploying HWA installation? 
+   
+    A: New Process group will be generated for new deployment. So redo the step 
+    [5. Log storage configuration](#5-log-storage-configuration) again.
     
