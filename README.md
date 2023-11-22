@@ -52,8 +52,8 @@ NOTE: If you are using Dynatrace version higher than 1.268 switch to the requird
    In the Dynatrace menu > Select user profile > Turn off Latest Dynatrace
 
 ### 1. Installating and configuring Dynatrace
-1. From [HCL License Portal](https://id.hcltechsw.com/login/login.htm) download the appropriate HCL Universal Orchestrator Observability installation package:
-   Universal Orchestrator for HWA Observability Add-on
+1. From [HCL License Portal](https://id.hcltechsw.com/login/login.htm) download the appropriate HWA Observability installation package:
+   HWA Observability for Dynatrace Add-on
    
 2. Installation package for Dynatrace : HWA_OBSERVABILITY_APP_FOR_DYNATRACE_10.x.tar.gz
 
@@ -63,7 +63,7 @@ NOTE: If you are using Dynatrace version higher than 1.268 switch to the requird
 	tar -xvzf HWA_OBSERVABILITY_APP_FOR_DYNATRACE_10.x.tar.gz
   ```
 
-4. Follow the steps mentioned on this ReadMe file to complete the solution setup.
+4. Follow the steps mentioned in this ReadMe file to complete the solution setup.
 
 #### 2. Install Dynatrace Operator  
 
